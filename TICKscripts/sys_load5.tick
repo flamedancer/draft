@@ -1,0 +1,89 @@
+
+Alert Rules
+8 Alert Rules
+Create Rule
+Name    Rule Type   Message Alerts  Enabled 
+cpu threshold   name:{{.Name}} id:{{.ID}} task_name:{{.TaskName}} group:{{.Group}} tag:{{.Tags}} level:{{.Level}} value:{{ index .Fields "value" }} time:{{.Time}}  http    
+View TICKscriptDelete
+cpu_alert               
+View TICKscriptDelete
+http_response2  threshold           
+View TICKscriptDelete
+http_response_alert             
+View TICKscriptDelete
+mem threshold   name:{{.Name}} id:{{.ID}} task_name:{{.TaskName}} group:{{.Group}} tag:{{.Tags}} level:{{.Level}} value:{{ index .Fields "value" }} time:{{.Time}}  log 
+View TICKscriptDelete
+system_load15(cpu_average)  threshold   name:{{.Name}} id:{{.ID}} task_name:{{.TaskName}} group:{{.Group}} tag:{{.Tags}} level:{{.Level}} value:{{ index .Fields "value" }} time:{{.Time}}  http    
+View TICKscriptDelete
+system_load5(cpu_average)   threshold       http    
+View TICKscriptDelete
+Untitled Rule   threshold           
+View TICKscriptDelete
+Generated TICKscript
+var db = 'telegraf'
+
+var rp = 'autogen'
+
+var measurement = 'system'
+
+var groupBy = ['host']
+
+var whereFilter = lambda: TRUE
+
+var name = 'system_load5(cpu_average)'
+
+var idVar = name + ':{{.Group}}'
+
+var message = ''
+
+var idTag = 'alertID'
+
+var levelTag = 'level'
+
+var messageField = 'message'
+
+var durationField = 'duration'
+
+var outputDB = 'chronograf'
+
+var outputRP = 'autogen'
+
+var outputMeasurement = 'alerts'
+
+var triggerType = 'threshold'
+
+var crit = 0.5
+
+var data = stream
+    |from()
+        .database(db)
+        .retentionPolicy(rp)
+        .measurement(measurement)
+        .groupBy(groupBy)
+        .where(whereFilter)
+    |eval(lambda: "load5" / "n_cpu")
+        .as('value')
+
+var trigger = data
+    |alert()
+        .crit(lambda: "value" < crit)
+        .stateChangesOnly()
+        .message(message)
+        .id(idVar)
+        .idTag(idTag)
+        .levelTag(levelTag)
+        .messageField(messageField)
+        .durationField(durationField)
+        .post()
+
+trigger
+    |influxDBOut()
+        .create()
+        .database(outputDB)
+        .retentionPolicy(outputRP)
+        .measurement(outputMeasurement)
+        .tag('alertName', name)
+        .tag('triggerType', triggerType)
+
+trigger
+    |httpOut('output')

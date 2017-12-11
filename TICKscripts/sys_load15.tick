@@ -1,0 +1,75 @@
+
+var db = 'telegraf'
+
+var rp = 'autogen'
+
+var measurement = 'system'
+
+var groupBy = ['host']
+
+var whereFilter = lambda: TRUE
+
+var name = 'system_load15(cpu_average)'
+
+var idVar = name + ':{{.Group}}'
+
+var message = 'name:{{.Name}}
+id:{{.ID}}
+task_name:{{.TaskName}}
+group:{{.Group}}
+tag:{{.Tags}}
+level:{{.Level}} 
+value:{{ index .Fields "value" }}
+time:{{.Time}}'
+
+var idTag = 'alertID'
+
+var levelTag = 'level'
+
+var messageField = 'message'
+
+var durationField = 'duration'
+
+var outputDB = 'chronograf'
+
+var outputRP = 'autogen'
+
+var outputMeasurement = 'alerts'
+
+var triggerType = 'threshold'
+
+var crit = 0.8
+
+var data = stream
+    |from()
+        .database(db)
+        .retentionPolicy(rp)
+        .measurement(measurement)
+        .groupBy(groupBy)
+        .where(whereFilter)
+    |eval(lambda: "load15" / "n_cpus")
+        .as('value')
+
+var trigger = data
+    |alert()
+        .crit(lambda: "value" > crit)
+        .stateChangesOnly()
+        .message(message)
+        .id(idVar)
+        .idTag(idTag)
+        .levelTag(levelTag)
+        .messageField(messageField)
+        .durationField(durationField)
+        .post('http://10.1.1.75:4000/alert/influx')
+
+trigger
+    |influxDBOut()
+        .create()
+        .database(outputDB)
+        .retentionPolicy(outputRP)
+        .measurement(outputMeasurement)
+        .tag('alertName', name)
+        .tag('triggerType', triggerType)
+
+trigger
+    |httpOut('output')

@@ -1,0 +1,8 @@
+2017-10-19 10:53:25 test_logger.py[line:12] DEBUG i am debug
+2017-10-19 10:53:25 test_logger.py[line:13] INFO i am info
+2017-10-19 10:53:25 test_logger.py[line:14] WARNING i am warning
+2017-10-19 10:53:25 test_logger.py[line:15] ERROR i am error
+2017-10-19 10:53:43 test_logger.py[line:12] DEBUG i am debug
+2017-10-19 10:53:43 test_logger.py[line:13] INFO i am info
+2017-10-19 10:53:43 test_logger.py[line:14] WARNING i am warning
+2017-10-19 10:53:43 test_logger.py[line:15] ERROR i am error

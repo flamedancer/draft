@@ -1,0 +1,4 @@
+nkapacitor define system_load5_per_cpu -type stream -tick sys_load5.tick -dbrp telegraf.autogen
+
+
+SELECT count(id) as c  from score_record where score_type = '111' and  create_time > date_add(now(),interval - 10 minute);

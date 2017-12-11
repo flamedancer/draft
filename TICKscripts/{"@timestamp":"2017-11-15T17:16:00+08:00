@@ -1,0 +1,12 @@
+{"@timestamp":"2017-11-15T17:16:00+08:00
+
+{\"@timestamp\":\"%{NGINXLOGDATE:timestamp}
+
+NGINXLOGDATE %{YEAR}-%{MONTHNUM}-%{MONTHDAY}T%{HOUR}:%{MINUTE}:%{SECOND}\+08:00
+
+
+
+{\"@timestamp\":\"%{NGINXLOGDATE:timestamp:ts-"2017-11-15T17:16:00+08:00"}\",.*?\"clientip\":\"%{IP:client}\",.*?\"responsetime\":%{NUMBER:responsetime:float}.*?\"http_host\":\"%{HOST:http_host:tag}.*?\"status\":\"%{WORD:status:tag}\".*
+
+
+{\"@timestamp\":\"%{NGINXLOGDATE:timestamp:ts-rfc3339}\",.*?\"clientip\":\"%{IP:client}\",.*?\"responsetime\":%{NUMBER:responsetime:floa         t}.*?\"http_host\":\"%{HOST:http_host:tag}.*?\"status\":\"%{WORD:status:tag}\".*

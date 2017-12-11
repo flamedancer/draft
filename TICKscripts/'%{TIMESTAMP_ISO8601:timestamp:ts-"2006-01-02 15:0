@@ -1,0 +1,1 @@
+'%{TIMESTAMP_ISO8601:timestamp:ts-"2006-01-02 15:04:05"} [%{LOGLEVEL:loglevel}] .*? client: %{IP:client:tag}, server: %{WORD:server}'

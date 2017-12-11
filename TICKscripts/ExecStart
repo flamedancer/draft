@@ -1,0 +1,20 @@
+ExecStart=/usr/bin/chronograf --host 0.0.0.0 --port 8888 -b /var/lib/chronograf/chronograf-v1.db -c /usr/share/chronograf/canned -t QgWdrJYnrVxmrKAmk4jv -i a651b16f52ad5f9e30d343d124a33c12d90784e279d8561a2a0af1c31024aeb7 -s 9c46ee3ed3002d12f82838ea9be16a88b8e35b338834e3195324f8e3cb373a3d
+
+
+# If you modify this, please also make sure to edit init.sh
+
+[Unit]
+Description=Open source monitoring and visualization UI for the entire TICK stack. 
+Documentation="https://www.influxdata.com/time-series-platform/chronograf/"
+After=network-online.target
+
+[Service]
+User=chronograf
+Group=chronograf
+ExecStart=/usr/bin/chronograf --host 0.0.0.0 --port 8888 -b /var/lib/chronograf/chronograf-v1.db -c /usr/share/chronograf/canned -t QgWdrJYnrVxmrKAmk4jv -i a651b16f52ad5f9e30d343d124a33c12d90784e279d8561a2a0af1c31024aeb7 -s 9c46ee3ed3002d12f82838ea9be16a88b8e35b338834e3195324f8e3cb373a3d
+KillMode=control-group
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+

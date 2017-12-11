@@ -1,0 +1,4 @@
+系统负载  load    1? 5? 15?  / n_cpu
+内存百分比 mem(%)
+磁盘使用率 disk(%)
+mysql服务器的　socker 连接数　   
