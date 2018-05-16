@@ -1,17 +1,31 @@
 # -*- coding:utf-8 -*-
-from urlparse import urlparse
-from urlparse import parse_qs
+from urllib.parse import urlparse
+from urllib.parse import parse_qs
 
 url_str = "http://www.163.com/mail/index.htm?key=果果&a=3"
-print urlparse(url_str)
-url = urlparse(url_str).query
-print url
-print { key: value[0] for key, value in parse_qs(url).items() }
-print dir(url)
-print 'protocol:',url.scheme
-print 'hostname:',url.hostname
-print 'port:',url.port
-print 'path:',url.path
-print 'params:',url.params
 
 
+def get_parse_info(url_str):
+    parse_info = urlparse(url_str)
+    return parse_info
+
+
+def echo_parse_info(parse_info):
+    info = {}
+    print(parse_info)
+    for key in dir(parse_info):
+        if key.startswith('_'):
+            continue
+        value = getattr(parse_info, key)
+        if hasattr(value, '__call__'):
+            continue
+        if key == 'query':
+            value = { key: value[0] for key, value in list(parse_qs(value).items()) }
+        info[key] = value
+    print(info)
+    return info
+
+
+
+if __name__ == '__main__':
+    echo_parse_info(get_parse_info(url_str))
