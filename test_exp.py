@@ -35,4 +35,19 @@ class MyError(Exception):
     def __str__(self):
         return repr(self.value)
 
-raise MyError(  "erer111")
+#raise MyError(  "erer111")
+
+def test_finially():
+    try:
+        1 / 0
+    except:
+        print('get execpt')
+        return False
+    else:
+        return True
+    finally:
+        print('do finally')
+    
+
+if __name__ == '__main__':
+    print(test_finially())

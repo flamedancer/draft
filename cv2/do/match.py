@@ -1,13 +1,12 @@
 import numpy as np
 import cv2
-from matplotlib import pyplot as plt
 
 img = cv2.imread('test1.png')          # queryImage
 
 img2 = img.copy()
 img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 template = cv2.imread('test11.png',0)
-# template = template[:35,0:35]
+template = template[0:35,0:35]
 w, h = template.shape[::-1]
 # All the 6 methods for comparison in a list
 methods = ['cv2.TM_CCOEFF', 'cv2.TM_CCOEFF_NORMED', 'cv2.TM_CCORR',

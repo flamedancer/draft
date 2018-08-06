@@ -1,11 +1,13 @@
 import numpy as np
-from matplotlib import pyplot as plt
+# from matplotlib import pyplot as plt
 import cv2
 import collections
 counter = collections.Counter()
 
-# img = cv2.imread('captcha_big1.png')
-img = cv2.imread('captcha1.png')
+# img = cv2.imread('captcha_big4.png')
+img = cv2.imread('captcha_big6.jpg')
+
+# img = cv2.imread('../test2.jpg')
 
 width, heigh = img.shape[:2]
 
@@ -108,12 +110,14 @@ def deal_counter():
     #        # else:
     #        #     new_img_bit[h][w] = [0, 0, 0]
     most = [item[0] for item in counter.most_common(2)]
-    # for h in range(heigh):
-    #     for w in range(width):
-    #         if new_img_bit[h][w] in most:
-    #             new_img_bit[h][w] = [255, 255, 255]
-    #         else:
-    #             new_img_bit[h][w] = [0, 0, 0]
+    for h in range(heigh):
+        for w in range(width):
+            if new_img_bit[h][w] in most:
+                new_img_bit[h][w] = [255, 255, 255]
+                # new_img_bit[h][w] = [0, 0, 0]
+            else:
+                new_img_bit[h][w] = [0, 0, 0]
+                # new_img_bit[h][w] = [255, 255, 255]
 
 def draw():
     for h in range(heigh):
@@ -123,20 +127,20 @@ def draw():
 
 
 if __name__ == '__main__':
-    # clear(first_by='h') 
-    # clear(first_by='w') 
+    # clear(first_by='h')
+    # clear(first_by='w')
     # deal_counter()
     # draw()
     # cv2.imshow('image',img)
     # cv2.waitKey(0)
     # cv2.destroyAllWindows()
     # edges = cv2.Canny(img,100,200)
-    # 
+    #
     # plt.subplot(121),plt.imshow(img,cmap = 'gray')
     # plt.title('Original Image'), plt.xticks([]), plt.yticks([])
     # plt.subplot(122),plt.imshow(edges)
     # plt.title('Edge Image'), plt.xticks([]), plt.yticks([])
-    # 
+    #
     # plt.show()
 
     Z = img.reshape((-1,3))
@@ -151,10 +155,10 @@ if __name__ == '__main__':
     res = center[label.flatten()]
     res2 = res.reshape((img.shape))
     img = res2
-    clear() 
-    deal_counter()
+    clear()
+    # deal_counter()
     draw()
-    kernel = np.ones((5,5),np.uint8)
+    # kernel = np.ones((5,5),np.uint8)
     # img = cv2.morphologyEx(img, cv2.MORPH_CLOSE, kernel)
     # img = cv2.erode(img,kernel,iterations = 1)
     # img = cv2.morphologyEx(img, cv2.MORPH_CLOSE, kernel)
