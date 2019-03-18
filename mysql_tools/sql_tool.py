@@ -3,14 +3,52 @@ import logging
 from MySQLdb.connections import Connection
 
 
+class FindResult:
+    def __init__(self, rows, columns=None):
+        self.rows = rows
+        self.columns = columns
+        self.length = len(rows)
+
+    def assoc(self):
+        assoc_attr = '_assoc'
+        if hasattr(self, assoc_attr):
+            return self._assoc
+        if not self.columns or (self.rows and len(self.columns) != len(self.rows[0])):
+            raise ValueError('no columns or the len of columns and row not same')
+        assoc_result = []
+        for row in self.rows:
+            assoc_result.append(dict(zip(self.columns, row)))
+        setattr(self, assoc_attr, assoc_result)
+        return assoc_result
+
+    def __len__(self):
+        return self.length
+
+    def __getitem__(self, key):
+        if isinstance(key, int):
+            return self.rows[key]
+        if key == 'rows':
+            return self.rows
+        if key == 'columns':
+            return self.columns
+
+    def __iter__(self):
+        self.index = 0
+        return self
+
+    def __next__(self):
+        self.index += 1
+        if self.index > self.length:
+            raise StopIteration
+        return self.rows[self.index - 1]
+
+
 class DB:
     @classmethod
     def init_db(cls, db_config):
         if not db_config:
             return None
         db = MySQLdb.connect(**db_config)
-
-        db.autocommit(True)
         return {
             'db': db,
         }
@@ -22,6 +60,12 @@ class DB:
         else:
             self.db_write = self.init_db(db_config_read)
 
+    def close(self):
+        if self.db_read['db']:
+            self.db_read['db'].close()
+        if self.db_write != self.db_read:
+            self.db_write['db'].close()
+
     def _exec_sql(self, db: Connection, sql: str, args=None):
         db.ping(True)
 
@@ -31,7 +75,7 @@ class DB:
                 rs.execute(sql)
             else:
                 rs.execute(sql, args)
-            rs.commit()
+            db.commit()
 
     def _find_sql(self, db: Connection, sql: str, args=None):
         db.ping(True)
@@ -45,10 +89,10 @@ class DB:
                 rs.execute(sql)
             else:
                 rs.execute(sql, args)
-            return {
-                'rows': rs.fetchall(),
-                'columns': [i[0] for i in rs.description] if rs.description else [],
-            }
+            return FindResult(
+                rs.fetchall(),
+                [i[0] for i in rs.description] if rs.description else []
+            )
 
     def update(self, table_name, row_info, filter_key):
         update_sentence = ', '.join(["{}='{}'".format(k, row_info[k]) for k in row_info if k not in filter_key])
@@ -79,7 +123,7 @@ class DB:
         )
         self._exec_sql(self.db_write['db'], sql)
 
-    def select(self, table_name, query_list, filter_info=None, limit=None):
+    def select(self, table_name, query_list, filter_info=None, limit=None, order_by=None, ):
         query_columns_s = ', '.join(query_list)
         sql = """SELECT {query_columns_s} FROM {table_name} """.format(
             table_name=table_name,
@@ -88,9 +132,20 @@ class DB:
         if filter_info:
             where_sentence = "WHERE " + ' AND '.join(["{}='{}'".format(k, v) for k, v in filter_info.items()])
             sql += where_sentence
+        if order_by:
+            if isinstance(order_by, str):
+                sql += " order by {}".format(order_by)
+            else:
+                sql += " order by {}".format(','.join(order_by))
         if limit:
             sql += " limit {}".format(limit)
-        return self._find_sql(self.db_read['db'], sql)['rows']
+        return self._find_sql(self.db_read['db'], sql)
+
+    def select_one_assoc(self, table_name, query_list, filter_info=None):
+        rst = self.select(table_name, query_list, filter_info, limit=1)
+        if not rst:
+            return {}
+        return rst.assoc()[0]
 
     def select_raw_sql(self, sql, args=None):
         return self._find_sql(self.db_read['db'], sql, args)
